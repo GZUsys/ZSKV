@@ -82,6 +82,10 @@ namespace rocksdb {
 Build RocksDB with ZenFS support:
 
 ```bash
+git clone https://github.com/Javy-L/zenfs.git plugin/zenfs
+find . -name "*.sh" -exec chmod +x {} \;
+chmod +x build_tools/build_detect_platform
+chmod +x plugin/zenfs/generate-version.sh
 DEBUG_LEVEL=0 ROCKSDB_PLUGINS=zenfs make db_bench install -j48
 ```
 
@@ -112,7 +116,7 @@ Example command for running `db_bench`:
 ./db_bench \
   --fs_uri=zenfs://dev:nvme0n1 \
   --benchmarks=fillrandom \
-  --num=1000000 \
+  --num=100000 \
   --max_background_jobs=8 \
   --db=./data \
   --use_direct_io_for_flush_and_compaction \
@@ -149,5 +153,4 @@ The following systems are used as baselines for comparison:
 * TerarkDB: https://github.com/bytedance/terarkdb
 
 All baseline systems use ZenFS as the storage file system for fair comparison.
-
 

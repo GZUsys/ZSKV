@@ -100,9 +100,9 @@ bool ZNSManager::load_zones() {
   zones_num = j; 
 
   if (have_active_zone()) {
-
     for (int i = 0; i < config::max_open_zones; ++i) {
       gc_zones.push_back(-1); 
+    }
   }
   else {
     for (int i = 0; i < config::max_open_zones; ++i) {
