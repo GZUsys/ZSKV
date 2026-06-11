@@ -67,15 +67,23 @@ namespace rocksdb {
 }
 ```
 
-> Note: `need_zones_num` must be consistent with `EXTEERNAL_USE_ZONES` in:
+> **Note:**
 >
-> ```text
+> (1) `need_zones_num` must be consistent with `EXTERNAL_USE_ZONES` in:
+>
+> ```
 > plugin/zenfs/fs/zbdlib_zenfs.h
 > ```
 >
 > Otherwise, the system may fail.
-
-> Note: If `is_bench` is modified, the project must be recompiled.
+>
+> (2) If `is_bench` is modified, the project must be recompiled.
+>
+> (3) ZenFS requires at least 32 zones. Therefore, the following condition must be satisfied:
+>
+> ```
+> num_zones - need_zones_num >= 32
+> ```
 
 ## 2. Build
 
@@ -85,7 +93,6 @@ Build RocksDB with ZenFS support:
 git clone https://github.com/Javy-L/zenfs.git plugin/zenfs
 find . -name "*.sh" -exec chmod +x {} \;
 chmod +x build_tools/build_detect_platform
-chmod +x plugin/zenfs/generate-version.sh
 DEBUG_LEVEL=0 ROCKSDB_PLUGINS=zenfs make db_bench install -j48
 ```
 
@@ -114,14 +121,20 @@ Example command for running `db_bench`:
 
 ```bash
 ./db_bench \
+  --value_size=8192 \
   --fs_uri=zenfs://dev:nvme0n1 \
   --benchmarks=fillrandom \
-  --num=100000 \
+  --num=1000000 \
   --max_background_jobs=8 \
+  --sync=true \
+  --use_fsync=true \
   --db=./data \
   --use_direct_io_for_flush_and_compaction \
+  --compression_type=none \
   --enable_pipelined_write=false \
-  --value_size=8192
+  --histogram=1 \
+  --seed=123456789 \
+  --statistics
 ```
 
 This command inserts 1,000,000 key-value pairs into RocksDB with a value size of 8192 bytes, using ZenFS on the ZNS SSD.
